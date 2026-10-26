@@ -49,6 +49,8 @@ class WhipperLogger(result.Logger):
         # Next one fully works only using the patched cdparanoia package
         # lines.append("Fill up missing offset samples with silence: true")
         data["Gap detection"] = "cdrdao %s" % ripResult.cdrdaoVersion
+        if ripResult.flacLevel is not None:
+            data["FLAC compression level"] = ripResult.flacLevel
 
         data["CD-R detected"] = ripResult.isCdr
         riplog["Ripping phase information"] = data

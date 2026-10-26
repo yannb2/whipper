@@ -57,7 +57,7 @@ class LoggerTestCase(unittest.TestCase):
     def setUp(self):
         self.path = os.path.join(os.path.dirname(__file__))
 
-    def testLogger(self):
+    def _ripResult(self):
         ripResult = RipResult()
         ripResult.offset = 6
         ripResult.overread = False
@@ -131,6 +131,10 @@ class LoggerTestCase(unittest.TestCase):
             }
         }
         ripResult.tracks.append(trackResult)
+        return ripResult
+
+    def testLogger(self):
+        ripResult = self._ripResult()
         logger = WhipperLogger()
         actual = logger.log(ripResult)
         actualLines = actual.splitlines()
@@ -177,3 +181,13 @@ class LoggerTestCase(unittest.TestCase):
             parsedLog['SHA-256 hash'],
             hashlib.sha256(log_body).hexdigest().upper()
         )
+
+    def testLoggerFlacLevel(self):
+        ripResult = self._ripResult()
+        lines = WhipperLogger().log(ripResult).splitlines()
+        self.assertNotIn('  FLAC compression level: 8', lines)
+
+        ripResult.flacLevel = 8
+        lines = WhipperLogger().log(ripResult).splitlines()
+        gap = lines.index('  Gap detection: cdrdao 1.2.4')
+        self.assertEqual(lines[gap + 1], '  FLAC compression level: 8')
