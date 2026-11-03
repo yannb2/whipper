@@ -25,6 +25,11 @@ jobs:
         with:
           fetch-depth: 0  # setuptools-scm reads the version from git tags
 
+      # The fork has no tags of its own; without upstream's, setuptools-scm
+      # versions the build 0.1.devN instead of the next whipper release.
+      - name: Fetch upstream tags
+        run: git fetch --tags https://github.com/whipper-team/whipper.git
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Build
@@ -40,8 +45,11 @@ jobs:
           docker run --rm --entrypoint flac whipper:test --version
           # `whipper cd rip --help` needs a CD drive, so test the patch with its
           # unit tests instead (they ship inside the installed package).
-          docker run --rm --entrypoint python3 whipper:test -m unittest -v \
-            whipper.test.test_program_flac whipper.test.test_result_logger
+          # The test helpers need Twisted, which the image doesn't ship.
+          docker run --rm --user root --entrypoint sh whipper:test -c '
+            pip3 install --quiet --break-system-packages twisted &&
+            python3 -m unittest -v \
+              whipper.test.test_program_flac whipper.test.test_result_logger'
 
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
