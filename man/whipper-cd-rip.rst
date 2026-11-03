@@ -73,6 +73,10 @@ Options
 |     continue ripping further tracks instead of giving up if a track can't be
 |     ripped
 
+| **--flac-level** *LEVEL*
+|     flac compression level, from 0 (fastest) to 8 (smallest); defaults to
+|     flac's own default
+
 Template schemes
 ================
 

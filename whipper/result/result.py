@@ -82,10 +82,12 @@ class RipResult:
     :cvar release: release of the CD drive
     :cvar cdrdaoVersion: version of cdrdao used for the rip
     :cvar cdparanoiaVersion: version of cdparanoia used for the rip
+    :cvar flacLevel: flac compression level, or None for flac's default
     """
 
     offset = 0
     overread = None
+    flacLevel = None
     isCdr = None
     logger = None
     table = None

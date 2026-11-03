@@ -326,6 +326,11 @@ Log files will log the path to tracks relative to this directory.
                                  help="continue ripping further tracks "
                                  "instead of giving up if a track "
                                  "can't be ripped")
+        self.parser.add_argument('--flac-level',
+                                 action="store", dest="flac_level",
+                                 help="flac compression level, from 0 "
+                                 "(fastest) to 8 (smallest); defaults to "
+                                 "flac's own default")
 
     def handle_arguments(self):
         self.options.output_directory = os.path.expanduser(
@@ -365,11 +370,20 @@ Log files will log the path to tracks relative to this directory.
         elif self.options.max_retries < 0:
             raise ValueError("number of max retries must be positive")
 
+        if self.options.flac_level is not None:
+            try:
+                self.options.flac_level = int(self.options.flac_level)
+            except ValueError:
+                raise ValueError("flac level must be an integer")
+            if not 0 <= self.options.flac_level <= 8:
+                raise ValueError("flac level must be between 0 and 8")
+
     def doCommand(self):
         self.program.setWorkingDirectory(self.options.working_directory)
         self.program.outdir = self.options.output_directory
         self.program.result.offset = int(self.options.offset)
         self.program.result.overread = self.options.overread
+        self.program.result.flacLevel = self.options.flac_level
         self.program.result.logger = self.options.logger
 
         discName = self.program.getPath(self.program.outdir,
@@ -481,7 +495,9 @@ Log files will log the path to tracks relative to this directory.
                                                   number,
                                                   len(self.itable.tracks),
                                                   extra),
-                                              coverArtPath=self.coverArtPath)
+                                              coverArtPath=self.coverArtPath,
+                                              flac_level=(
+                                                  self.options.flac_level))
                         break
                     # FIXME: catching too general exception (Exception)
                     except Exception as e:
