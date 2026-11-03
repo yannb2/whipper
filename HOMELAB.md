@@ -8,7 +8,8 @@ drive). Everything else is upstream's code, unchanged.
 | --- | --- | --- |
 | Add flac_level option to whipper cd rip | Adds `--flac-level 0-8` to `whipper cd rip`, also settable as `flac_level` in `whipper.conf`. Writes "FLAC compression level" to the rip log when set. | Unit tests and a config-file check (2026-10-26) |
 | Dockerfile: build on Debian trixie | Moves the official Dockerfile from Debian buster (end of life, so the stock image can no longer be built) to trixie. | By the **Homelab image** workflow on every pull request |
-| Homelab image workflow (this file too) | Builds the image, checks that `--flac-level` is there, and publishes `ghcr.io/yannb2/whipper:latest` on every push to `develop`. | Runs in GitHub Actions |
+| Homelab image workflow (this file too) | Builds the image, runs the flac_level unit tests inside it, and publishes `ghcr.io/yannb2/whipper:latest` on every push to `develop`. | Runs in GitHub Actions |
+| Greetings workflow removed | Upstream's first-contribution greeter fails in a fork (its token can't post), and there are no outside contributors here. | n/a |
 
 The two code changes were made against upstream `develop` at `71251a0` (February 2026).
 They are kept in the fork only for now (Yann, 2026-10-26); either could be sent upstream

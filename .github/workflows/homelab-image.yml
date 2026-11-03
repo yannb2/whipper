@@ -1,5 +1,5 @@
 # Builds the fork's container image (flac_level patch + Debian trixie Dockerfile).
-# Pull requests: build and smoke-test only. Pushes to develop: also publish to
+# Pull requests: build, smoke-test and run the flac_level unit tests only. Pushes to develop: also publish to
 # ghcr.io/yannb2/whipper with the tags latest and sha-<short sha>.
 name: Homelab image
 
@@ -37,9 +37,11 @@ jobs:
       - name: Smoke test
         run: |
           docker run --rm whipper:test -v
-          docker run --rm whipper:test cd rip --help | tee help.txt
-          grep -q -- '--flac-level' help.txt
           docker run --rm --entrypoint flac whipper:test --version
+          # `whipper cd rip --help` needs a CD drive, so test the patch with its
+          # unit tests instead (they ship inside the installed package).
+          docker run --rm --entrypoint python3 whipper:test -m unittest -v \
+            whipper.test.test_program_flac whipper.test.test_result_logger
 
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
